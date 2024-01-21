@@ -130,6 +130,18 @@ connectionHouse.on("subscriptionStatus", (strGroupsJoined, houseName, hasSubscri
 
 })
 
+connectionHouse.on("newMemberAddedToHouse", (houseName) => {
+    toastr.success(`Member has subscribed to ${houseName}`);
+});
+
+connectionHouse.on("newMemberRemovedFromHouse", (houseName) => {
+    toastr.warning(`Member has unsubscribed from ${houseName}`);
+});
+
+connectionHouse.on("triggerHouseNotification", (houseName) => {
+    toastr.success(`A new notification for ${houseName} has been launched.`);
+});
+
 //start connection
 function fulfilled() {
     //do something on start

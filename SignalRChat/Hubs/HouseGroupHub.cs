@@ -22,7 +22,7 @@ namespace SignalRChat.Hubs
                 }
 
                 await Clients.Caller.SendAsync("subscriptionStatus", houseList, houseName.ToLower(), true);
-                //await Clients.Others.SendAsync("newMemberAddedToHouse", houseName);
+                await Clients.Others.SendAsync("newMemberAddedToHouse", houseName);
                 await Groups.AddToGroupAsync(Context.ConnectionId, houseName);
             }
         }
@@ -43,9 +43,14 @@ namespace SignalRChat.Hubs
                 }
 
                 await Clients.Caller.SendAsync("subscriptionStatus", houseList, houseName.ToLower(), false);
-                //await Clients.Others.SendAsync("newMemberRemovedFromHouse", houseName);
+                await Clients.Others.SendAsync("newMemberRemovedFromHouse", houseName);
                 await Groups.RemoveFromGroupAsync(Context.ConnectionId, houseName);
             }
+        }
+
+        public async Task TriggerHouseNotify(string houseName)
+        {
+            await Clients.Group(houseName).SendAsync("triggerHouseNotification", houseName);
         }
     }
 }
