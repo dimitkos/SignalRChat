@@ -53,6 +53,7 @@ namespace SignalRChat
             app.MapHub<DeathlyHallowsHub>("hubs/deathyhallows");
             app.MapHub<HouseGroupHub>("/hubs/houseGroup");
             app.MapHub<NotificationHub>("/hubs/notification");
+            app.MapHub<BasicChatHub>("/hubs/chat");
 
             app.Run();
         }
