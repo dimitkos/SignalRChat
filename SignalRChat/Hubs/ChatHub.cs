@@ -33,12 +33,28 @@ namespace SignalRChat.Hubs
             return base.OnConnectedAsync();
         }
 
-        //[Authorize]
-        //public async Task SendMessageToReceiver(string sender, string receiver, string message)
-        //{
-        //    var userId = _context.Users.First(x=> x.Email.ToLower() == receiver.ToLower()).Id;
+        public override Task OnDisconnectedAsync(Exception? exception)
+        {
+            var UserId = Context.User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-        //    await Clients.User(userId).SendAsync("MessageReceived", sender, message);
-        //}
+            if (HubConnections.HasUserConnection(UserId, Context.ConnectionId))
+            {
+                var UserConnections = HubConnections.Users[UserId];
+                UserConnections.Remove(Context.ConnectionId);
+
+                HubConnections.Users.Remove(UserId);
+
+                if (UserConnections.Any())
+                    HubConnections.Users.Add(UserId, UserConnections);
+            }
+
+            if (!String.IsNullOrEmpty(UserId))
+            {
+                var userName = _context.Users.FirstOrDefault(u => u.Id == UserId).UserName;
+                Clients.Users(HubConnections.OnlineUsers()).SendAsync("ReceiveUserDisconnected", UserId, userName);
+                HubConnections.AddUserConnection(UserId, Context.ConnectionId);
+            }
+            return base.OnDisconnectedAsync(exception);
+        }
     }
 }
