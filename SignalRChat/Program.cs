@@ -54,6 +54,7 @@ namespace SignalRChat
             app.MapHub<HouseGroupHub>("/hubs/houseGroup");
             app.MapHub<NotificationHub>("/hubs/notification");
             app.MapHub<BasicChatHub>("/hubs/basicchat");
+            app.MapHub<ChatHub>("/hubs/chat");
             app.MapHub<OrderHub>("/hubs/order");
 
             app.Run();
