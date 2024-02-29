@@ -69,6 +69,7 @@ namespace SignalRChat.Controllers
                 return NotFound();
             }
             var chatRoom = await _context.ChatRooms.FindAsync(id);
+
             if (chatRoom == null)
             {
                 return NotFound();
@@ -77,7 +78,9 @@ namespace SignalRChat.Controllers
             _context.ChatRooms.Remove(chatRoom);
             await _context.SaveChangesAsync();
 
-            return NoContent();
+            var room = await _context.ChatRooms.FirstOrDefaultAsync();
+
+            return Ok(new { deleted = id, selected = (room == null ? 0 : room.Id) });
         }
     }
 }
