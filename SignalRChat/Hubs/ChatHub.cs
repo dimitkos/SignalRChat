@@ -72,5 +72,24 @@ namespace SignalRChat.Hubs
 
             await Clients.All.SendAsync("ReceiveDeleteRoomMessage", deleted, selected, roomName, userName);
         }
+
+        public async Task SendPublicMessage(int roomId, string message, string roomName)
+        {
+            var UserId = Context.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userName = _context.Users.FirstOrDefault(u => u.Id == UserId).UserName;
+
+            await Clients.All.SendAsync("ReceivePublicMessage", roomId, UserId, userName, message, roomName);
+        }
+
+        public async Task SendPrivateMessage(string receiverId, string message, string receiverName)
+        {
+            var senderId = Context.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var senderName = _context.Users.FirstOrDefault(u => u.Id == senderId).UserName;
+
+            var users = new string[] { senderId, receiverId };
+
+            await Clients.Users(users).SendAsync("ReceivePrivateMessage", senderId, senderName, receiverId, message, Guid.NewGuid(), receiverName);
+        }
+
     }
 }

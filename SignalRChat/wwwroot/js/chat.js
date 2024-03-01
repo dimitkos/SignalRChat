@@ -22,6 +22,39 @@ connection.on("ReceiveDeleteRoomMessage", function (deleted, selected, roomName,
     addMessage(`${userName} has deleted room  ${roomName}`);
 });
 
+connection.on("ReceivePublicMessage", function (roomId, UserId, userName, message, roomName) {
+    addMessage(`[Public Message - ${roomName}] ${userName} says ${message}`);
+})
+
+connection.on("ReceivePrivateMessage", function (senderId, senderName, receiverId, message, chatId, receiverName) {
+    addMessage(`[Private Message to ${receiverName} ]${senderName} says ${message}`);
+})
+
+function sendPublicMessage() {
+    let inputMsg = document.getElementById('txtPublicMessage');
+    let ddlSelRoom = document.getElementById('ddlSelRoom');
+
+    let roomId = ddlSelRoom.value;
+    let roomName = ddlSelRoom.options[ddlSelRoom.selectedIndex].text;
+    var message = inputMsg.value;
+
+    connection.send("SendPublicMessage", Number(roomId), message, roomName);
+    inputMsg.value = '';
+
+}
+
+function sendPrivateMessage() {
+    let inputMsg = document.getElementById('txtPrivateMessage');
+    let ddlSelUser = document.getElementById('ddlSelUser');
+
+    let receiverId = ddlSelUser.value;
+    let receiverName = ddlSelUser.options[ddlSelUser.selectedIndex].text;
+    var message = inputMsg.value;
+
+    connection.send("SendPrivateMessage", receiverId, message, receiverName);
+    inputMsg.value = '';
+}
+
 function addnewRoom(maxRoom) {
 
     let createRoomName = document.getElementById('createRoomName');
@@ -45,7 +78,7 @@ function addnewRoom(maxRoom) {
         success: function (json) {
 
             /*ADD ROOM COMPLETED SUCCESSFULLY*/
-            connection.invoke("SendAddRoomMessage", maxRoom, json.id, json.name)
+            connection.send("SendAddRoomMessage", maxRoom, json.id, json.name)
             createRoomName.value = '';
         },
         error: function (xhr) {
@@ -83,7 +116,7 @@ function deleteRoom() {
         processData: false,
         cache: false,
         success: function (json) {
-            connection.invoke("SendDeleteRoomMessage", json.deleted, json.selected, roomName);
+            connection.send("SendDeleteRoomMessage", json.deleted, json.selected, roomName);
             fillRoomDropDown();
         },
         error: function (xhr) {
