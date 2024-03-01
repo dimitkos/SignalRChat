@@ -1,9 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using SignalRChat.Data;
 using SignalRChat.Hubs;
 using SignalRChat.Models;
+using SignalRChat.Models.ViewModel;
 using System.Diagnostics;
+using System.Security.Claims;
 
 namespace SignalRChat.Controllers
 {
@@ -40,6 +43,21 @@ namespace SignalRChat.Controllers
         public IActionResult HarryPotterHouse()
         {
             return View();
+        }
+
+        [Authorize]
+        public IActionResult Chat()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var chatViewModel = new ChatViewModel
+            {
+                Rooms = _context.ChatRooms.ToList(),
+                MaxRoomAllowed = 4,
+                UserId = userId
+            };
+
+            return View(chatViewModel);
         }
 
         public IActionResult BasicChat()
