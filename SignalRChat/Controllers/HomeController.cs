@@ -60,6 +60,20 @@ namespace SignalRChat.Controllers
             return View(chatViewModel);
         }
 
+        public IActionResult AdvancedChat()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var chatViewModel = new ChatViewModel
+            {
+                Rooms = _context.ChatRooms.ToList(),
+                MaxRoomAllowed = 4,
+                UserId = userId
+            };
+
+            return View(chatViewModel);
+        }
+
         public IActionResult BasicChat()
         {
             return View();
